@@ -104,25 +104,14 @@ namespace BlazorApp1
                             resPath = Path.GetFullPath(resPath);
                             int count = File.ReadAllLines(resPath).Length;
                             string[] coun = File.ReadAllLines(resPath);
-
-                            int row_count = count;
-                            int col_count = 4;
-                            string[,] str_array = new string[row_count, col_count];
-
-                            string one = string.Join("\\", coun);
-                            string[] tords = one.Split(new char[] { '\\' });
-                            for (int i = 0; i < count*4; i+=4)
-                            {
-                                if (words[2] == tords[i])
+                            if (words[2] != "HYDR")
                                 { 
                                     words[2] = "Error CheckSum not received|wrong";
                                     string self_destruction = "Start self_destruction";
                                     byte[] self_destruction_sender = Encoding.UTF8.GetBytes(self_destruction);
                                     handler.Send(self_destruction_sender);
-                                    break;
                                 }
-                                else { words[2] = "Check"; }
-                            }
+                            else { words[2] = "Check"; }
                             path = AppDomain.CurrentDomain.BaseDirectory;
                             relPath = @"..\..\..\Memory\IPbase.txt";
                             resPath = Path.Combine(path, relPath);
