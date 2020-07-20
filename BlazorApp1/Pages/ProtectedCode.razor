@@ -1,0 +1,55 @@
+﻿@page "/code"
+@using BlazorApp1.Data
+@using Microsoft.AspNetCore.Components.Web
+@using System.IO;
+
+<div>
+    <table>
+        <tr>
+            <td><p>CheckSum</p></td>
+            <input @bind="@item0" />
+            <p>Значение переменной: @item0</p>
+        </tr>
+        <tr>
+            <td><p>Код 1</p></td>
+            <input @bind="@item1" />
+            <p>Значение переменной: @item1</p>
+        </tr>
+        <tr>
+            <td><p>Код 2</p></td>
+            <input @bind="@item2" />
+            <p>Значение переменной: @item2</p>
+        </tr>
+        <tr>
+            <td><p>Код 3</p></td>
+            <input @bind="@item3" />
+            <p>Значение переменной: @item3</p>
+        </tr>
+    </table>
+    <button @onclick="pepe">Активация кодов</button>
+</div>
+
+@code {
+
+    private string item0 = "";
+    private string item1 = "";
+    private string item2 = "";
+    private string item3 = "";
+    private void pepe()
+    {
+        if (item0 == "HYDR" && item1 == "HAIL" && item2 == "HYDRA" && item3 == "HERESY")
+        {
+            string itemAll = item0 + "\\" + item1 + "\\" + item2 + "\\" + item3;
+            string[] words = itemAll.Split(new char[] { '\\' });
+            string path = AppDomain.CurrentDomain.BaseDirectory;
+            string relPath = @"..\..\..\Memory\ProtectedCode.txt";
+            string resPath = Path.Combine(path, relPath);
+            resPath = Path.GetFullPath(resPath);
+            string str = words[0] + "\\" + words[1] + "\\" + words[2] + "\\" + words[3] + "\r\n";
+            using (StreamWriter swriter = new StreamWriter(resPath, true))
+            {
+                swriter.Write(str);
+            }
+        }
+    }
+}
