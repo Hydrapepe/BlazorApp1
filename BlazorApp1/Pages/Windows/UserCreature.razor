@@ -1,4 +1,22 @@
 ﻿@page "/Windows/UserCreature"
-@code {
+@inject IJSRuntime JSRuntime
 
+<h1>Blazor Download File</h1>
+
+<textarea @bind="noteContent" />
+<br />
+<button @onclick="DownloadFile">Download</button>
+
+@code {
+    string noteContent;
+    string fileName = "note.txt";
+
+    public async void DownloadFile()
+    {
+        await JSRuntime.InvokeAsync<object>(
+            "FileSaveAs",
+            fileName,
+            noteContent
+        );
+    }
 }
