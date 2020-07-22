@@ -1,133 +1,164 @@
 ﻿@page "/Windows/AD"
 @inject IJSRuntime JSRuntime
 
-    <table>
-        <tr>
-            <td><p>Ip аддрес сервера</p></td>
+        
+    <div class="block">
+
+        <div class="block_Main1">
+            <p>Ip аддрес сервера</p>
             <input @bind="@IP_SERVER" />
-        </tr>
-        <tr>
-            <td><p>Маска(24 формат)</p></td>
+        </div>
+        <div class="block_Main2">
+            <p>Маска(24 формат)</p>
             <input @bind="@MASK24" />
-        </tr>
-        <tr>
-            <td><p>GATEWAY</p></td>
+        </div>
+        <div class="block_Main3">
+            <p>GATEWAY</p>
             <input @bind="@GATEWAY" />
-        </tr>
-        <tr>
-            <td><p>NETBIOS</p></td>
+        </div>
+        <div class="block_Main4">
+            <p>NETBIOS</p>
             <input @bind="@NETBIOS" />
-        </tr>
-        <tr>
-            <td><p>NETWORK(последний 0)</p></td>
+        </div>
+        <div class="block_Main5">
+            <p>NETWORK(последний 0)</p>
             <input @bind="@NETWORK" />
-        </tr>
-        <tr>
-            <td><p>LAST BYTE(последний байт ip адреса)</p></td>
+        </div>
+        <div class="block_Main6">
+            <p>LAST BYTE(последний байт ip адреса)</p>
             <input @bind="@LAST_BYTE" />
-        </tr>
-        <tr>
-            <td><p>Имя сервера</p></td>
+        </div>
+        <div class="block_Main7">
+            <p>Имя сервера</p>
             <input @bind="@NAME_SERVER" />
-        </tr>
-        <tr>
-            <td><p>Доменное имя</p></td>
+        </div>
+        <div class="block_Main8">
+            <p>Доменное имя</p>
             <input @bind="@DOMAIN_NAME" />
-        </tr>
-        <tr>
-            <td><p>REVERS IP(192.168.1.1 => 1.168.192)</p></td>
+        </div>
+        <div class="block_Main9">
+            <p>REVERS IP(192.168.1.1 => 1.168.192)</p>
             <input @bind="@REVERS_IP" />
-        </tr>
-        <tr>
-            <td><p>Имя пула</p></td>
+        </div>
+        <div class="block_Main10">
+            <p>Имя пула</p>
             <input @bind="@POOL_NAME" />
-        </tr>
-        <tr>
-            <td><p>Раздавать ip адреса с</p></td>
+        </div>
+        <div class="block_Main11">
+            <p>Раздавать ip адреса с</p>
             <input @bind="@START_RANGE" />
-        </tr>
-        <tr>
-            <td><p>Раздавать ip адреса по</p></td>
+        </div>
+        <div class="block_Main12">
+            <p>Раздавать ip адреса по</p>
             <input @bind="@END_RANGE" />
-        </tr>
-        <tr>
-            <td><p>Маска(255 формат)</p></td>
+        </div>
+        <div class="block_Main13">
+            <p>Маска(255 формат)</p>
             <input @bind="@MASK255" />
-        </tr>
-        <tr>
-            <td><p>Укажите директорию откуда будет запускатся файл</p></td>
+        </div>
+        <div class="block_Main14">
+            <p>Укажите директорию откуда будет запускатся файл</p>
             <input @bind="@DIR" />
-        </tr>
-    </table>
-<button class="btn btn-primary" @onclick="checker">Проверить настройки</button>
+        </div>
+        <div class="block_Main15">
+            <button class="btn btn-primary" @onclick="checker">Проверить настройки</button>
+        </div>
+    </div>
 
-@code
+        
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        @code
 {
-    private string IP_SERVER, MASK24, GATEWAY, NETBIOS, NETWORK, LAST_BYTE, NAME_SERVER, DOMAIN_NAME, REVERS_IP, POOL_NAME, START_RANGE, END_RANGE, MASK255, Memory, DIR;
+            private string IP_SERVER, MASK24, GATEWAY, NETBIOS, NETWORK, LAST_BYTE, NAME_SERVER, DOMAIN_NAME, REVERS_IP, POOL_NAME, START_RANGE, END_RANGE, MASK255, Memory, DIR;
 
-    private void checker()
-    {
-        if (IP_SERVER.Length != 0 && MASK24.Length != 0 && GATEWAY.Length != 0 && NETBIOS.Length != 0 && NETWORK.Length != 0 && LAST_BYTE.Length != 0 && NAME_SERVER.Length != 0 && DOMAIN_NAME.Length != 0 && REVERS_IP.Length != 0 && POOL_NAME.Length != 0 && START_RANGE.Length != 0 && END_RANGE.Length != 0 && MASK255.Length != 0 && DIR.Length != 0)
-        {
-            Memory = "param ([int] $Stage=1)\n" +
-            "function one\n" +
-            "{\n" +
-            "$action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '"+DIR+ "\\AD.ps1 -Stage 2'\n" +
-            "$trigger = New-ScheduledTaskTrigger -AtLogon\n" +
-            "Register-ScheduledTask -Action $action -Trigger $trigger -TaskName \"PEPETEST1\"\n" +
-            "New-NetIPAddress -InterfaceIndex 12 -IPAddress " + IP_SERVER + " –PrefixLength " + MASK24 + " -DefaultGateway " + GATEWAY + "\n" +
-            "Set-DnsClientServerAddress -InterfaceIndex 12 -ServerAddresses " + IP_SERVER + ", " + IP_SERVER + "\n" +
-            "Rename-Computer -NewName " + NAME_SERVER + " -Force\nRestart-Computer -Force\n" +
-            "}\n" +
-            "function two \n" +
-            "{" +
-            "$action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '" + DIR + "\\AD.ps1 -Stage 3'\n" +
-            "$trigger = New-ScheduledTaskTrigger -AtLogon\n" +
-            "Register-ScheduledTask -Action $action -Trigger $trigger -TaskName \"PEPETEST2\"\n" +
-            "Unregister-ScheduledTask -TaskName \"PEPETEST1\" -Confirm:$false\n" +
-            "Import-Module ServerManager\n" +
-            "Add-WindowsFeature –Name AD-Domain-Services –IncludeAllSubFeature –IncludeManagementTools\n" +
-            "Import-Module ADDSDeployment\n" +
-            "Install-ADDSForest -CreateDnsDelegation:$false -DatabasePath \"C:\\Windows\\NTDS\" -DomainMode \"Win2012\" -DomainName \"" + DOMAIN_NAME + "\" -DomainNetbiosName " + NETBIOS + " -ForestMode \"Win2012\" -InstallDns:$true -LogPath \"C:\\Windows\\NTDS\" -NoRebootOnCompletion:$false -SysvolPath \"C:\\Windows\\SYSVOL\" -Force:$true -SafeModeAdministratorPassword (convertto-securestring Windows1 -asplaintext -force)\n" +
-            "}\n" +
-            "function three \n" +
-            "{\n" +
-            "Unregister-ScheduledTask -TaskName \"PEPETEST2\" -Confirm:$false\n" +
-            "Add-DnsServerPrimaryZone -DynamicUpdate NonsecureAndSecure -NetworkId '" + NETWORK + "/" + MASK24 + "' -ReplicationScope Domain\n" +
-            "Add-DnsServerResourceRecordPtr -Name \"" + LAST_BYTE + "\" -ZoneName \"" + REVERS_IP + ".in-addr.arpa\" -AgeRecord -PtrDomainName \"$env:COMPUTERNAME." + DOMAIN_NAME + "\"\n" +
-            "Import-Module ServerManager\n" +
-            "Add-WindowsFeature –Name DHCP –IncludeManagementTools\n" +
-            "Add-DHCPServerSecurityGroup -ComputerName $env:COMPUTERNAME\n" +
-            "Restart-Service dhcpserver\nAdd-DhcpServerInDC -DnsName $env:COMPUTERNAME -IPAddress " + IP_SERVER + "\n" +
-            "$User = \"$env:USERDOMAIN\\$env:USERNAME\"\n" +
-            "$PWord = ConvertTo-SecureString -String Windows1 -AsPlainText -Force\n" +
-            "$Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $User, $PWord\n" +
-            "Set-DHCPServerDnsCredential -ComputerName $env:COMPUTERNAME -Credential $Credential\nAdd-DHCPServerv4Scope -Name " + POOL_NAME + " -StartRange " + START_RANGE + " -EndRange " + END_RANGE + " -SubnetMask " + MASK255 + " -State Active\n" +
-            "Set-DHCPServerv4OptionValue -ComputerName $env:COMPUTERNAME -DnsServer " + IP_SERVER + " -DnsDomain " + DOMAIN_NAME + " -Router " + GATEWAY + "\n" +
-            "Set-DHCPServerv4OptionValue -ComputerName $env:COMPUTERNAME -ScopeId " + NETWORK + " -DnsServer " + IP_SERVER + " -DnsDomain " + DOMAIN_NAME + " -Router " + GATEWAY + "\n" +
-            "Restart-Computer -Force\n" +
-            "}\n" +
-            "if($Stage -eq 1) \n" +
-            "{\n" +
-            "one\n" +
-            "}\n" +
-            "if($Stage -eq 2) \n" +
-            "{\n" +
-            "two\n" +
-            "}\n" +
-            "if($Stage -eq 3) \n" +
-            "{\n" +
-            "three\n" +
-            "}\n";
-            DownloadFile("AD.ps1", Memory);
+            private void checker()
+            {
+                if (IP_SERVER.Length != 0 && MASK24.Length != 0 && GATEWAY.Length != 0 && NETBIOS.Length != 0 && NETWORK.Length != 0 && LAST_BYTE.Length != 0 && NAME_SERVER.Length != 0 && DOMAIN_NAME.Length != 0 && REVERS_IP.Length != 0 && POOL_NAME.Length != 0 && START_RANGE.Length != 0 && END_RANGE.Length != 0 && MASK255.Length != 0 && DIR.Length != 0)
+                {
+                    Memory = "param ([int] $Stage=1)\n" +
+                    "function one\n" +
+                    "{\n" +
+                    "$action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '" + DIR + "\\AD.ps1 -Stage 2'\n" +
+                    "$trigger = New-ScheduledTaskTrigger -AtLogon\n" +
+                    "Register-ScheduledTask -Action $action -Trigger $trigger -TaskName \"PEPETEST1\"\n" +
+                    "New-NetIPAddress -InterfaceIndex 12 -IPAddress " + IP_SERVER + " –PrefixLength " + MASK24 + " -DefaultGateway " + GATEWAY + "\n" +
+                    "Set-DnsClientServerAddress -InterfaceIndex 12 -ServerAddresses " + IP_SERVER + ", " + IP_SERVER + "\n" +
+                    "Rename-Computer -NewName " + NAME_SERVER + " -Force\nRestart-Computer -Force\n" +
+                    "}\n" +
+                    "function two \n" +
+                    "{" +
+                    "$action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '" + DIR + "\\AD.ps1 -Stage 3'\n" +
+                    "$trigger = New-ScheduledTaskTrigger -AtLogon\n" +
+                    "Register-ScheduledTask -Action $action -Trigger $trigger -TaskName \"PEPETEST2\"\n" +
+                    "Unregister-ScheduledTask -TaskName \"PEPETEST1\" -Confirm:$false\n" +
+                    "Import-Module ServerManager\n" +
+                    "Add-WindowsFeature –Name AD-Domain-Services –IncludeAllSubFeature –IncludeManagementTools\n" +
+                    "Import-Module ADDSDeployment\n" +
+                    "Install-ADDSForest -CreateDnsDelegation:$false -DatabasePath \"C:\\Windows\\NTDS\" -DomainMode \"Win2012\" -DomainName \"" + DOMAIN_NAME + "\" -DomainNetbiosName " + NETBIOS + " -ForestMode \"Win2012\" -InstallDns:$true -LogPath \"C:\\Windows\\NTDS\" -NoRebootOnCompletion:$false -SysvolPath \"C:\\Windows\\SYSVOL\" -Force:$true -SafeModeAdministratorPassword (convertto-securestring Windows1 -asplaintext -force)\n" +
+                    "}\n" +
+                    "function three \n" +
+                    "{\n" +
+                    "Unregister-ScheduledTask -TaskName \"PEPETEST2\" -Confirm:$false\n" +
+                    "Add-DnsServerPrimaryZone -DynamicUpdate NonsecureAndSecure -NetworkId '" + NETWORK + "/" + MASK24 + "' -ReplicationScope Domain\n" +
+                    "Add-DnsServerResourceRecordPtr -Name \"" + LAST_BYTE + "\" -ZoneName \"" + REVERS_IP + ".in-addr.arpa\" -AgeRecord -PtrDomainName \"$env:COMPUTERNAME." + DOMAIN_NAME + "\"\n" +
+                    "Import-Module ServerManager\n" +
+                    "Add-WindowsFeature –Name DHCP –IncludeManagementTools\n" +
+                    "Add-DHCPServerSecurityGroup -ComputerName $env:COMPUTERNAME\n" +
+                    "Restart-Service dhcpserver\nAdd-DhcpServerInDC -DnsName $env:COMPUTERNAME -IPAddress " + IP_SERVER + "\n" +
+                    "$User = \"$env:USERDOMAIN\\$env:USERNAME\"\n" +
+                    "$PWord = ConvertTo-SecureString -String Windows1 -AsPlainText -Force\n" +
+                    "$Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $User, $PWord\n" +
+                    "Set-DHCPServerDnsCredential -ComputerName $env:COMPUTERNAME -Credential $Credential\nAdd-DHCPServerv4Scope -Name " + POOL_NAME + " -StartRange " + START_RANGE + " -EndRange " + END_RANGE + " -SubnetMask " + MASK255 + " -State Active\n" +
+                    "Set-DHCPServerv4OptionValue -ComputerName $env:COMPUTERNAME -DnsServer " + IP_SERVER + " -DnsDomain " + DOMAIN_NAME + " -Router " + GATEWAY + "\n" +
+                    "Set-DHCPServerv4OptionValue -ComputerName $env:COMPUTERNAME -ScopeId " + NETWORK + " -DnsServer " + IP_SERVER + " -DnsDomain " + DOMAIN_NAME + " -Router " + GATEWAY + "\n" +
+                    "Restart-Computer -Force\n" +
+                    "}\n" +
+                    "if($Stage -eq 1) \n" +
+                    "{\n" +
+                    "one\n" +
+                    "}\n" +
+                    "if($Stage -eq 2) \n" +
+                    "{\n" +
+                    "two\n" +
+                    "}\n" +
+                    "if($Stage -eq 3) \n" +
+                    "{\n" +
+                    "three\n" +
+                    "}\n";
+                    DownloadFile("AD.ps1", Memory);
+                }
+            }
+            public async void DownloadFile(string test1, string test2)
+            {
+                await JSRuntime.InvokeAsync<object>(
+                    "FileSaveAs",
+                    test1,
+                    test2
+                );
+            }
         }
-    }
-    public async void DownloadFile(string test1, string test2)
-    {
-        await JSRuntime.InvokeAsync<object>(
-            "FileSaveAs",
-            test1,
-            test2
-        );
-    }
-}
