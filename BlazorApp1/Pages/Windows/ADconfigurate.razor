@@ -1,84 +1,78 @@
 ﻿@page "/Windows/AD"
+@inject IJSRuntime JSRuntime
 
-<table>
-    <tr>
-        <td><p>Ip аддрес сервера</p></td>
-        <input @bind="@IP_SERVER" />
-    </tr>
-    <tr>
-        <td><p>Маска(24 формат)</p></td>
-        <input @bind="@MASK24" />
-    </tr>
-    <tr>
-        <td><p>GATEWAY</p></td>
-        <input @bind="@GATEWAY" />
-    </tr>
-    <tr>
-        <td><p>NETBIOS</p></td>
-        <input @bind="@NETBIOS" />
-    </tr>
-    <tr>
-        <td><p>NETWORK(последний 0)</p></td>
-        <input @bind="@NETWORK" />
-    </tr>
-    <tr>
-        <td><p>LAST BYTE(последний байт ip адреса)</p></td>
-        <input @bind="@LAST_BYTE" />
-    </tr>
-    <tr>
-        <td><p>Имя сервера</p></td>
-        <input @bind="@NAME_SERVER" />
-    </tr>
-    <tr>
-        <td><p>Доменное имя</p></td>
-        <input @bind="@DOMAIN_NAME" />
-    </tr>
-    <tr>
-        <td><p>REVERS IP(192.168.1.1 => 1.168.192)</p></td>
-        <input @bind="@REVERS_IP" />
-    </tr>
-    <tr>
-        <td><p>Имя пула</p></td>
-        <input @bind="@POOL_NAME" />
-    </tr>
-    <tr>
-        <td><p>Раздавать ip адреса с</p></td>
-        <input @bind="@START_RANGE" />
-    </tr>
-    <tr>
-        <td><p>Раздавать ip адреса по</p></td>
-        <input @bind="@END_RANGE" />
-    </tr>
-    <tr>
-        <td><p>Маска(255 формат)</p></td>
-        <input @bind="@MASK255" />
-    </tr>
-</table>
-<button class="btn btn-primary" @onclick="checker">Проверить данные</button>
-<button class="btn btn-primary" disabled=@right @onclick="bilder">Создать файл настройки AD</button>
-<p><a href="text.7z" download>Скачать файл</a></p>
-<a class="form-control btn btn-primary" href="/download?name=test.txt" target="_blank">Download</a>
-
-
+    <table>
+        <tr>
+            <td><p>Ip аддрес сервера</p></td>
+            <input @bind="@IP_SERVER" />
+        </tr>
+        <tr>
+            <td><p>Маска(24 формат)</p></td>
+            <input @bind="@MASK24" />
+        </tr>
+        <tr>
+            <td><p>GATEWAY</p></td>
+            <input @bind="@GATEWAY" />
+        </tr>
+        <tr>
+            <td><p>NETBIOS</p></td>
+            <input @bind="@NETBIOS" />
+        </tr>
+        <tr>
+            <td><p>NETWORK(последний 0)</p></td>
+            <input @bind="@NETWORK" />
+        </tr>
+        <tr>
+            <td><p>LAST BYTE(последний байт ip адреса)</p></td>
+            <input @bind="@LAST_BYTE" />
+        </tr>
+        <tr>
+            <td><p>Имя сервера</p></td>
+            <input @bind="@NAME_SERVER" />
+        </tr>
+        <tr>
+            <td><p>Доменное имя</p></td>
+            <input @bind="@DOMAIN_NAME" />
+        </tr>
+        <tr>
+            <td><p>REVERS IP(192.168.1.1 => 1.168.192)</p></td>
+            <input @bind="@REVERS_IP" />
+        </tr>
+        <tr>
+            <td><p>Имя пула</p></td>
+            <input @bind="@POOL_NAME" />
+        </tr>
+        <tr>
+            <td><p>Раздавать ip адреса с</p></td>
+            <input @bind="@START_RANGE" />
+        </tr>
+        <tr>
+            <td><p>Раздавать ip адреса по</p></td>
+            <input @bind="@END_RANGE" />
+        </tr>
+        <tr>
+            <td><p>Маска(255 формат)</p></td>
+            <input @bind="@MASK255" />
+        </tr>
+        <tr>
+            <td><p>Укажите директорию откуда будет запускатся файл</p></td>
+            <input @bind="@DIR" />
+        </tr>
+    </table>
+<button class="btn btn-primary" @onclick="checker">Проверить настройки</button>
 
 @code
 {
-    bool right = true;
-    private string IP_SERVER, MASK24, GATEWAY, NETBIOS, NETWORK, LAST_BYTE, NAME_SERVER, DOMAIN_NAME, REVERS_IP, POOL_NAME, START_RANGE, END_RANGE, MASK255;
+    private string IP_SERVER, MASK24, GATEWAY, NETBIOS, NETWORK, LAST_BYTE, NAME_SERVER, DOMAIN_NAME, REVERS_IP, POOL_NAME, START_RANGE, END_RANGE, MASK255, Memory, DIR;
 
     private void checker()
     {
-        if (IP_SERVER != "" && MASK24 != "" && GATEWAY != "" && NETBIOS != "" && NETWORK != "" && LAST_BYTE != "" && NAME_SERVER != "" && DOMAIN_NAME != "" && REVERS_IP != "" && POOL_NAME != "" && START_RANGE != "" && END_RANGE != "" && MASK255 != "")
+        if (IP_SERVER.Length != 0 && MASK24.Length != 0 && GATEWAY.Length != 0 && NETBIOS.Length != 0 && NETWORK.Length != 0 && LAST_BYTE.Length != 0 && NAME_SERVER.Length != 0 && DOMAIN_NAME.Length != 0 && REVERS_IP.Length != 0 && POOL_NAME.Length != 0 && START_RANGE.Length != 0 && END_RANGE.Length != 0 && MASK255.Length != 0 && DIR.Length != 0)
         {
-            right = false;
-        }
-    }
-    private void bilder()
-    {
-        string Memory = "param ([int] $Stage)\n" +
+            Memory = "param ([int] $Stage=1)\n" +
             "function one\n" +
             "{\n" +
-            "$action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '" + Environment.CurrentDirectory + "\\test.ps1 -Stage 2'\n" +
+            "$action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '"+DIR+ "\\AD.ps1 -Stage 2'\n" +
             "$trigger = New-ScheduledTaskTrigger -AtLogon\n" +
             "Register-ScheduledTask -Action $action -Trigger $trigger -TaskName \"PEPETEST1\"\n" +
             "New-NetIPAddress -InterfaceIndex 12 -IPAddress " + IP_SERVER + " –PrefixLength " + MASK24 + " -DefaultGateway " + GATEWAY + "\n" +
@@ -87,7 +81,7 @@
             "}\n" +
             "function two \n" +
             "{" +
-            "$action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '" + Environment.CurrentDirectory + "\\test.ps1 -Stage 3'\n" +
+            "$action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '" + DIR + "\\AD.ps1 -Stage 3'\n" +
             "$trigger = New-ScheduledTaskTrigger -AtLogon\n" +
             "Register-ScheduledTask -Action $action -Trigger $trigger -TaskName \"PEPETEST2\"\n" +
             "Unregister-ScheduledTask -TaskName \"PEPETEST1\" -Confirm:$false\n" +
@@ -99,7 +93,6 @@
             "function three \n" +
             "{\n" +
             "Unregister-ScheduledTask -TaskName \"PEPETEST2\" -Confirm:$false\n" +
-            "Set-ExecutionPolicy Restricted\n" +
             "Add-DnsServerPrimaryZone -DynamicUpdate NonsecureAndSecure -NetworkId '" + NETWORK + "/" + MASK24 + "' -ReplicationScope Domain\n" +
             "Add-DnsServerResourceRecordPtr -Name \"" + LAST_BYTE + "\" -ZoneName \"" + REVERS_IP + ".in-addr.arpa\" -AgeRecord -PtrDomainName \"$env:COMPUTERNAME." + DOMAIN_NAME + "\"\n" +
             "Import-Module ServerManager\n" +
@@ -126,6 +119,15 @@
             "{\n" +
             "three\n" +
             "}\n";
-        Create_file.Test(Memory);
+            DownloadFile("AD.ps1", Memory);
+        }
+    }
+    public async void DownloadFile(string test1, string test2)
+    {
+        await JSRuntime.InvokeAsync<object>(
+            "FileSaveAs",
+            test1,
+            test2
+        );
     }
 }
