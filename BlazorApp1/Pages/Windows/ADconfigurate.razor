@@ -54,25 +54,27 @@
         <input @bind="@MASK255" />
     </tr>
 </table>
-<button @onclick="checker">Проверить данные</button>
-
+<button class="btn btn-primary" @onclick="checker">Проверить данные</button>
+<button class="btn btn-primary" disabled=@right @onclick="bilder">Создать файл настройки AD</button>
+<p><a href="text.7z" download>Скачать файл</a></p>
+<a class="form-control btn btn-primary" href="/download?name=test.txt" target="_blank">Download</a>
 
 
 
 @code
 {
+    bool right = true;
     private string IP_SERVER, MASK24, GATEWAY, NETBIOS, NETWORK, LAST_BYTE, NAME_SERVER, DOMAIN_NAME, REVERS_IP, POOL_NAME, START_RANGE, END_RANGE, MASK255;
 
     private void checker()
     {
         if (IP_SERVER != "" && MASK24 != "" && GATEWAY != "" && NETBIOS != "" && NETWORK != "" && LAST_BYTE != "" && NAME_SERVER != "" && DOMAIN_NAME != "" && REVERS_IP != "" && POOL_NAME != "" && START_RANGE != "" && END_RANGE != "" && MASK255 != "")
         {
-            //btn.Enabled = true;
+            right = false;
         }
     }
     private void bilder()
     {
-        //<asp:button id="btn" btn.Enabled=false; @onclick="bilder"></button>
         string Memory = "param ([int] $Stage)\n" +
             "function one\n" +
             "{\n" +
@@ -124,5 +126,6 @@
             "{\n" +
             "three\n" +
             "}\n";
+        Create_file.Test(Memory);
     }
 }

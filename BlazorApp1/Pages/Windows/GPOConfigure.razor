@@ -1,4 +1,18 @@
 ﻿@page "/Windows/GPOConfigure"
+    <button class="btn btn-primary" @onclick="UpdateHeading">
+        Update heading
+    </button>
+    <button disabled=@IsTaskRunning @onclick="DispatchTask">Submit</button>
+
 @code {
 
+    bool IsTaskRunning = true;
+    private void UpdateHeading(MouseEventArgs e)
+    {
+        IsTaskRunning = false;
+    }
+    private void DispatchTask(MouseEventArgs e)
+    {
+
+    }
 }
