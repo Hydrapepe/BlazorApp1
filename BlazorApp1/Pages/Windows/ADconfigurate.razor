@@ -1,100 +1,76 @@
 ﻿@page "/Windows/AD"
 @inject IJSRuntime JSRuntime
 
-        
-    <div class="block">
-
-        <div class="block_Main1">
+       
+        <div class="block_Main101">
             <p>Ip аддрес сервера</p>
             <input @bind="@IP_SERVER" />
         </div>
-        <div class="block_Main2">
+        <div class="block_Main102">
             <p>Маска(24 формат)</p>
             <input @bind="@MASK24" />
         </div>
-        <div class="block_Main3">
+        <div class="block_Main103">
             <p>GATEWAY</p>
             <input @bind="@GATEWAY" />
         </div>
-        <div class="block_Main4">
+        <div class="block_Main104">
             <p>NETBIOS</p>
             <input @bind="@NETBIOS" />
         </div>
-        <div class="block_Main5">
+        <div class="block_Main105">
             <p>NETWORK(последний 0)</p>
             <input @bind="@NETWORK" />
         </div>
-        <div class="block_Main6">
+        <div class="block_Main106">
             <p>LAST BYTE(последний байт ip адреса)</p>
             <input @bind="@LAST_BYTE" />
         </div>
-        <div class="block_Main7">
+        <div class="block_Main107">
             <p>Имя сервера</p>
             <input @bind="@NAME_SERVER" />
         </div>
-        <div class="block_Main8">
+        <div class="block_Main108">
             <p>Доменное имя</p>
             <input @bind="@DOMAIN_NAME" />
         </div>
-        <div class="block_Main9">
+        <div class="block_Main109">
             <p>REVERS IP(192.168.1.1 => 1.168.192)</p>
             <input @bind="@REVERS_IP" />
         </div>
-        <div class="block_Main10">
+        <div class="block_Main110">
             <p>Имя пула</p>
             <input @bind="@POOL_NAME" />
         </div>
-        <div class="block_Main11">
+        <div class="block_Main111">
             <p>Раздавать ip адреса с</p>
             <input @bind="@START_RANGE" />
         </div>
-        <div class="block_Main12">
+        <div class="block_Main112">
             <p>Раздавать ip адреса по</p>
             <input @bind="@END_RANGE" />
         </div>
-        <div class="block_Main13">
+        <div class="block_Main113">
             <p>Маска(255 формат)</p>
             <input @bind="@MASK255" />
         </div>
-        <div class="block_Main14">
+        <div class="block_Main114">
             <p>Укажите директорию откуда будет запускатся файл</p>
             <input @bind="@DIR" />
         </div>
-        <div class="block_Main15">
+        <div class="block_Main115">
             <button class="btn btn-primary" @onclick="checker">Проверить настройки</button>
         </div>
-    </div>
 
-        
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
 
         @code
 {
-            private string IP_SERVER, MASK24, GATEWAY, NETBIOS, NETWORK, LAST_BYTE, NAME_SERVER, DOMAIN_NAME, REVERS_IP, POOL_NAME, START_RANGE, END_RANGE, MASK255, Memory, DIR;
+            private string MASK24 = "24";
+            private string NAME_SERVER = "Server";
+            private string POOL_NAME = "Pool";
+            private string MASK255 = "255.255.255.0";
+            private string DIR = @"C:\";
+            private string IP_SERVER, GATEWAY, NETBIOS, NETWORK, LAST_BYTE, DOMAIN_NAME, REVERS_IP, START_RANGE, END_RANGE, Memory;
 
             private void checker()
             {
@@ -153,12 +129,12 @@
                     DownloadFile("AD.ps1", Memory);
                 }
             }
-            public async void DownloadFile(string test1, string test2)
+            public async void DownloadFile(string Name, string content)
             {
                 await JSRuntime.InvokeAsync<object>(
                     "FileSaveAs",
-                    test1,
-                    test2
+                    Name,
+                    content
                 );
             }
         }

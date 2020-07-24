@@ -182,92 +182,146 @@ app {
     }
 }
 
-.block 
-{
-    margin: 0px auto;
-    height: 500px;
-}
-.block_Main1 {
+.block_Main101 {
     position: fixed;
     left: 400px;
     top: 90px;
 }
-.block_Main2 {
+.block_Main102 {
     position: fixed;
     left: 700px;
     top: 90px;
 }
-.block_Main3 {
+.block_Main103 {
     position: fixed;
     left: 1000px;
     top: 90px;
 }
-.block_Main4 {
+.block_Main104 {
     position: fixed;
     left: 1300px;
     top: 90px;
 }
-.block_Main5 {
+.block_Main105 {
     position: fixed;
     left: 1600px;
     top: 90px;
 }
-.block_Main6 {
+.block_Main106 {
     position: fixed;
     left: 400px;
     top: 210px;
 }
-.block_Main7 {
+.block_Main107 {
     position: fixed;
     left: 700px;
     top: 210px;
 }
 
-.block_Main8 {
+.block_Main108 {
     position: fixed;
     left: 1000px;
     top: 210px;
 }
 
-.block_Main9 {
+.block_Main109 {
     position: fixed;
     left: 1300px;
     top: 210px;
 }
 
-.block_Main10 {
+.block_Main110 {
     position: fixed;
     left: 1600px;
     top: 210px;
 }
 
-.block_Main11 {
+.block_Main111 {
     position: fixed;
     left: 500px;
     top: 330px;
 }
 
-.block_Main12 {
+.block_Main112 {
     position: fixed;
     left: 800px;
     top: 330px;
 }
 
-.block_Main13 {
+.block_Main113 {
     position: fixed;
     left: 1100px;
     top: 330px;
 }
 
-.block_Main14 {
+.block_Main114 {
     position: fixed;
     left: 1400px;
     top: 330px;
 }
-.block_Main15 {
+.block_Main115 {
     position: fixed;
     left: 1000px;
     top: 500px;
 }
 
-
+.block_Main201 {
+    position: fixed;
+    left: 350px;
+    top: 90px;
+}
+.block_Main202 {
+    position: fixed;
+    left: 1000px;
+    top: 90px;
+}
+.block_Main203 {
+    position: fixed;
+    left: 1600px;
+    top: 90px;
+}
+.block_Main204 {
+    position: fixed;
+    left: 600px;
+    top: 210px;
+}
+.block_Main205 {
+    position: fixed;
+    left: 600px;
+    top: 290px;
+}
+.block_Main206 {
+    position: fixed;
+    left: 600px;
+    top: 370px;
+}
+.block_Main207 {
+    position: fixed;
+    left: 600px;
+    top: 450px;
+}
+.block_Main208 {
+    position: fixed;
+    left: 1300px;
+    top: 210px;
+}
+.block_Main209 {
+    position: fixed;
+    left: 1300px;
+    top: 290px;
+}
+.block_Main210 {
+    position: fixed;
+    left: 1300px;
+    top: 370px;
+}
+.block_Main220 {
+    position: fixed;
+    left: 800px;
+    top: 500px;
+}
+.block_Main221 {
+    position: fixed;
+    left: 1200px;
+    top: 500px;
+}

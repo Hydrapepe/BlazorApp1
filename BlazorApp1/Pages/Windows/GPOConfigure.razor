@@ -1,18 +1,147 @@
 ﻿@page "/Windows/GPOConfigure"
-    <button class="btn btn-primary" @onclick="UpdateHeading">
-        Update heading
-    </button>
-    <button disabled=@IsTaskRunning @onclick="DispatchTask">Submit</button>
+@inject IJSRuntime JSRuntime
+
+
+
+    <div class="block_Main201">
+        <p>Имя политики</p>
+        <input @bind="@NAME_POLISY" />  
+    </div>
+    <div class="block_Main202">
+        <p>Имя репресируемой группы</p>
+        <input @bind="@NAME_GROUP" />
+    </div>
+    <div class="block_Main203">
+        <p>Доменное имя</p>
+        <input @bind="@DOMAIN_NAME" />
+    </div>
+    <div class="block_Main204">
+        <input type="checkbox" value="false" @onchange="eventArgs1"> Бан консоли
+    </div>
+    <div class="block_Main205">
+        <input type="checkbox" value="false" @onchange="eventArgs2"> Бан выполнить(win+ R)
+    </div>
+    <div class="block_Main206">
+        <input type="checkbox" value="false" @onchange="eventArgs3"> Бан редактора реестра
+    </div>
+    <div class="block_Main207">
+        <input type="checkbox" value="false" @onchange="eventArgs4"> Бан панели управления
+    </div>
+    <div class="block_Main208">
+        <input type="checkbox" value="false" @onchange="eventArgs5"> Бан экранной заставки
+    </div>
+    <div class="block_Main209">
+        <input type="checkbox" value="false" @onchange="eventArgs6"> Бан бан обоев
+    </div>
+    <div class="block_Main210">
+        <input type="checkbox" value="false" @onchange="eventArgs7"> Бан на первую заставку(Win10 может не робить)
+    </div>
+    <div class="block_Main220">
+        <button class="btn btn-primary" @onclick="Generate">БЭН</button>
+    </div>
+    <div class="block_Main221">
+        <button class="btn btn-primary" @onclick="Generate_ALL">Мега БЭН</button>
+    </div>
+
+
+
+
+
+
+
 
 @code {
+    public bool[] pepe = new bool[7] { false, false, false, false, false, false, false };
 
-    bool IsTaskRunning = true;
-    private void UpdateHeading(MouseEventArgs e)
+    private string NAME_POLISY, NAME_GROUP, DOMAIN_NAME, SERVER_DOT_SPLIT;
+    void eventArgs1()
     {
-        IsTaskRunning = false;
+        pepe[0] = true;
     }
-    private void DispatchTask(MouseEventArgs e)
+    void eventArgs2()
     {
+        pepe[1] = true;
+    }
+    void eventArgs3()
+    {
+        pepe[2] = true;
+    }
+    void eventArgs4()
+    {
+        pepe[3] = true;
+    }
+    void eventArgs5()
+    {
+        pepe[4] = true;
+    }
+    void eventArgs6()
+    {
+        pepe[5] = true;
+    }
+    void eventArgs7()
+    {
+        pepe[6] = true;
+    }
 
+    void Generate()
+    {
+        string[] memory = new string[7] { "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKCU\\Software\\Policies\\Microsoft\\Windows\\System\" -ValueName DisableCMD -Type DWord -Value 1\n",
+        "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\" -ValueName NoRun -Type DWord -Value 1\n",
+        "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\" -ValueName DisableRegistryTools -Type DWord -Value 1\n",
+        "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\" -ValueName NoControlPanel -Type DWord -Value 1\n",
+        "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\" -ValueName ScreenSaveActive -Type String -Value 0\n",
+        "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\ActiveDesktop\" -ValueName NoChangingWallPaper -Type DWord -Value 1\n",
+        "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" -ValueName EnableFirstLogonAnimation  -Type DWord -Value 0\n"};
+        string[] words = DOMAIN_NAME.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+        SERVER_DOT_SPLIT = words[0] = "OU=" + NAME_GROUP + ",DC=" + words[0];
+        for (int i =1;i!=words.Length;i++)
+        {
+            words[i] = ",DC=" + words[i];
+            SERVER_DOT_SPLIT += words[i];
+        }
+
+        string text = "New-GPO -Name \"" + NAME_POLISY + "\" | New-GPLink -Target \"" + SERVER_DOT_SPLIT + "\"\n";
+        for (int i=0; i!=pepe.Length;i++)
+        {
+            if(pepe[i])
+            {
+                text += memory[i];
+            }
+        }
+
+    }
+
+
+    void Generate_ALL()
+    {
+        string[] memory = new string[7] { "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKCU\\Software\\Policies\\Microsoft\\Windows\\System\" -ValueName DisableCMD -Type DWord -Value 1\n",
+        "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\" -ValueName NoRun -Type DWord -Value 1\n",
+        "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\" -ValueName DisableRegistryTools -Type DWord -Value 1\n",
+        "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\" -ValueName NoControlPanel -Type DWord -Value 1\n",
+        "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\" -ValueName ScreenSaveActive -Type String -Value 0\n",
+        "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\ActiveDesktop\" -ValueName NoChangingWallPaper -Type DWord -Value 1\n",
+        "Set-GPRegistryValue -Name \"" + NAME_POLISY + "\" -Key \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" -ValueName EnableFirstLogonAnimation  -Type DWord -Value 0\n"};
+        string[] words = DOMAIN_NAME.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+        SERVER_DOT_SPLIT = words[0] = "OU=" + NAME_GROUP + ",DC=" + words[0];
+        for (int i = 1; i != words.Length; i++)
+        {
+            words[i] = ",DC=" + words[i];
+            SERVER_DOT_SPLIT += words[i];
+        }
+        string text = "New-GPO -Name \"" + NAME_POLISY + "\" | New-GPLink -Target \"" + SERVER_DOT_SPLIT + "\"\n";
+        for (int i = 0; i != pepe.Length; i++)
+        {
+            text += memory[i];
+        }
+        DownloadFile("GPO.ps1", text);
+    }
+
+    public async void DownloadFile(string Name, string Content)
+    {
+        await JSRuntime.InvokeAsync<object>(
+            "FileSaveAs",
+            Name,
+            Content
+        );
     }
 }
