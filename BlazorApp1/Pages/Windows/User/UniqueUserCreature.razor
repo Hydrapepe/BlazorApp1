@@ -1,0 +1,152 @@
+﻿@page "/Windows/User/UniqueUserCreature"
+@inject IJSRuntime JSRuntime
+
+    <div class="block_Main4">
+        Заполнять только если нужна новая группа
+        <div class="block_Main409">
+            <input type="checkbox" checked=@new_group @onchange="neww"> Нужна новая группа
+        </div>
+        <div class="block_Main401">
+            <p>Имя группы</p>
+            <input @bind="@NAME_GROUP" />
+        </div>
+        <div class="block_Main402">
+            <p>Имя сервера</p>
+            <input @bind="@NAME_SERVER" />
+        </div>
+    </div>
+<div class="block_Main403">
+    <p>Доменное имя</p>
+    <input @bind="@DOMAIN_NAME" />
+</div>
+<div class="block_Main404">
+    <p>Пароль</p>
+    <input @bind="@PASSWORD" />
+</div>
+<div class="block_Main405">
+    <p>Логин юзера</p>
+    <input @bind="@LOGIN_USER" />
+</div>
+<div class="block_Main406">
+    <p>Имя юзеров</p>
+    <input @bind="@IMYA_USER" />
+</div>
+<div class="block_Main407">
+    <p>Фамилия юзеров</p>
+    <input @bind="@FAM_USER" />
+</div>
+<div class="block_Main408">
+    <p>Всего юзеров сгенерируется: @q</p>
+</div>
+<div class="block_Main410">
+    <input type="checkbox" checked=@protekted @onchange="yder"> Удержать группу(добавить последующих юзеров в эту же группу)
+</div>
+<div class="block_Main411">
+    <button class="btn btn-primary" @onclick="memory">Добавить юзера к генерации</button>
+</div>
+<div class="block_Main412">
+    <button class="btn btn-primary" @onclick="generate">Сгенерировать</button>
+</div>
+<div class="block_Main44">
+    <div class="block_Main414">
+        <input type="checkbox" checked=@subs @onclick="sub"> Добавить в существующую группу
+        <p>Организационная еденица(Вводить обратно через \ . Например PEPE\TEST вводить TEST\PEPE)</p>
+        <input @bind="@OU" />
+    </div>
+    <div class="block_Main412">
+        <button class="btn btn-primary" @onclick="zero">Обнулить</button>
+    </div>
+</div>
+    @code {
+        private string NAME_GROUP, NAME_SERVER, DOMAIN_NAME, PASSWORD, LOGIN_USER, IMYA_USER, FAM_USER, SERVER_DOT_SPLIT, temp_group, temp_all, SERVER_NAME_FULL, OU, memeory;
+        bool new_group = false;
+        bool protekted = false;
+        bool subs = false;
+        int q = 0;
+        void neww()
+        {
+            new_group = true;
+        }
+        void yder()
+        {
+            protekted = true;
+        }
+        void sub()
+        {
+            subs = true;
+        }
+        void zero()
+        {
+            NAME_SERVER = PASSWORD = FAM_USER = IMYA_USER = LOGIN_USER = SERVER_NAME_FULL = DOMAIN_NAME = OU = NAME_GROUP = temp_all = "";
+            subs = new_group = protekted = false;
+            q = 0;
+        }
+
+        void memory()
+        {
+            SERVER_NAME_FULL = NAME_SERVER + "." + DOMAIN_NAME;
+            string[] words = DOMAIN_NAME.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (subs == true)
+            {
+                string[] pepe = OU.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                for (int count = 0; count != pepe.Length; count++)
+                {
+                    pepe[count] = $"OU={pepe[count]},";
+                    memeory += pepe[count];
+                }
+                for (int i = 0; i != words.Length; i++)
+                {
+                    memeory += "DC=" + words[i] + ",";
+                }
+                memeory = memeory.Remove(memeory.Length - 1);
+                temp_all +=
+    $"$ou = \"{memeory}\"\n" +
+    $"$pass = ConvertTo-SecureString -String \"{PASSWORD}\" -AsPlainText -Force\n" +
+    "New-AdUser -Path $ou -Name \"" + LOGIN_USER + "\" -GivenName \"" + IMYA_USER + "\" -Surname \"" + FAM_USER + "\" -SamAccountName \"" + LOGIN_USER + "\" -UserPrincipalName \"" + LOGIN_USER + "@" + DOMAIN_NAME + "\" -Path $org -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString \"" + PASSWORD + "\" -AsPlainText -force) -passThru\n";
+            }
+
+            SERVER_DOT_SPLIT = words[0] = "OU=" + NAME_GROUP + ",DC=" + words[0];
+            for (int i = 1; i != words.Length; i++)
+            {
+                words[i] = ",DC=" + words[i];
+                SERVER_DOT_SPLIT += words[i];
+            }
+
+            if (new_group == true)
+            {
+                temp_group = temp_group + "New-ADOrganizationalUnit -Name:\"" + NAME_GROUP + "\" -Path:\"" + SERVER_DOT_SPLIT + "\" -ProtectedFromAccidentalDeletion:$true -Server:\"" + SERVER_NAME_FULL + "\"\n";
+            }
+            if (!subs)
+            {
+                temp_all = temp_group?.Length == 0
+                                ? temp_all + "$org=\"" + SERVER_DOT_SPLIT + "\";\n$username=\"" + LOGIN_USER + "\";\n$count=1;\nforeach ($i in $count)\n{New-AdUser -Name \"" + LOGIN_USER + "\" -GivenName \"" + LOGIN_USER + "\" -Surname \"" + IMYA_USER + "\" -SamAccountName \"" + FAM_USER + "\" -UserPrincipalName \"" + FAM_USER + "@" + DOMAIN_NAME + "\" -Path $org -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString \"" + PASSWORD + "\" -AsPlainText -force) -passThru }"
+                                : temp_all + "$org=\"OU=" + NAME_GROUP + "," + SERVER_DOT_SPLIT + "\"" +
+                                  "\n$username=\"" + LOGIN_USER + "\"" +
+                                  "\n$count=1" +
+                                  "\nforeach ($i in $count)\n{New-AdUser -Name \"" + LOGIN_USER + "\" -GivenName \"" + IMYA_USER + "\" -Surname \"" + FAM_USER + "\" -SamAccountName \"" + LOGIN_USER + "\" -UserPrincipalName \"" + LOGIN_USER + "@" + DOMAIN_NAME + "\" -Path $org -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString \"" + PASSWORD + "\" -AsPlainText -force) -passThru }\n";
+            }
+            new_group = false;
+            if (!protekted)
+            {
+                OU = "";
+                NAME_GROUP = "";
+            }
+            NAME_SERVER = PASSWORD = FAM_USER = IMYA_USER = LOGIN_USER = SERVER_NAME_FULL = DOMAIN_NAME = "";
+            q++;
+            subs = new_group = protekted = false;
+        }
+        void generate()
+        {
+            string generate_file = temp_group + temp_all;
+            DownloadFile("GUU.ps1", generate_file);
+        }
+        public async void DownloadFile(string Name, string content)
+        {
+            await JSRuntime.InvokeAsync<object>(
+                "FileSaveAs",
+                Name,
+                content
+            );
+        }
+    }

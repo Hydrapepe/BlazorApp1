@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Main\**" />
+    <Content Remove="Main\**" />
+    <EmbeddedResource Remove="Main\**" />
+    <None Remove="Main\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
   </ItemGroup>
 
@@ -24,10 +31,6 @@
     <None Update="Memory\UserCouner.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Main\" />
   </ItemGroup>
 
 </Project>
