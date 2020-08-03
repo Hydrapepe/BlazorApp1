@@ -38,9 +38,6 @@
 <div class="block_Main408">
     <p>Всего юзеров сгенерируется: @q</p>
 </div>
-<div class="block_Main410">
-    <input type="checkbox" checked=@protekted @onchange="yder"> Удержать группу(добавить последующих юзеров в эту же группу)
-</div>
 <div class="block_Main411">
     <button class="btn btn-primary" @onclick="memory">Добавить юзера к генерации</button>
 </div>
@@ -53,23 +50,18 @@
         <p>Организационная еденица(Вводить обратно через \ . Например PEPE\TEST вводить TEST\PEPE)</p>
         <input @bind="@OU" />
     </div>
-    <div class="block_Main412">
-        <button class="btn btn-primary" @onclick="zero">Обнулить</button>
-    </div>
+</div>
+<div class="block_Main410">
+    <button class="btn btn-primary" @onclick="zero">Обнулить</button>
 </div>
     @code {
         private string NAME_GROUP, NAME_SERVER, DOMAIN_NAME, PASSWORD, LOGIN_USER, IMYA_USER, FAM_USER, SERVER_DOT_SPLIT, temp_group, temp_all, SERVER_NAME_FULL, OU, memeory;
         bool new_group = false;
-        bool protekted = false;
         bool subs = false;
         int q = 0;
         void neww()
         {
             new_group = true;
-        }
-        void yder()
-        {
-            protekted = true;
         }
         void sub()
         {
@@ -78,7 +70,7 @@
         void zero()
         {
             NAME_SERVER = PASSWORD = FAM_USER = IMYA_USER = LOGIN_USER = SERVER_NAME_FULL = DOMAIN_NAME = OU = NAME_GROUP = temp_all = "";
-            subs = new_group = protekted = false;
+            subs = new_group = false;
             q = 0;
         }
 
@@ -126,15 +118,9 @@
                                   "\n$count=1" +
                                   "\nforeach ($i in $count)\n{New-AdUser -Name \"" + LOGIN_USER + "\" -GivenName \"" + IMYA_USER + "\" -Surname \"" + FAM_USER + "\" -SamAccountName \"" + LOGIN_USER + "\" -UserPrincipalName \"" + LOGIN_USER + "@" + DOMAIN_NAME + "\" -Path $org -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString \"" + PASSWORD + "\" -AsPlainText -force) -passThru }\n";
             }
-            new_group = false;
-            if (!protekted)
-            {
-                OU = "";
-                NAME_GROUP = "";
-            }
-            NAME_SERVER = PASSWORD = FAM_USER = IMYA_USER = LOGIN_USER = SERVER_NAME_FULL = DOMAIN_NAME = "";
+            NAME_SERVER = PASSWORD = FAM_USER = IMYA_USER = LOGIN_USER = SERVER_NAME_FULL = DOMAIN_NAME = NAME_GROUP = OU ="";
             q++;
-            subs = new_group = protekted = false;
+            subs = new_group  = false;
         }
         void generate()
         {
