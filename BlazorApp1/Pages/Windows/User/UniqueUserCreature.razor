@@ -38,24 +38,26 @@
 <div class="block_Main408">
     <p>Всего юзеров сгенерируется: @q</p>
 </div>
-<div class="block_Main411">
-    <button class="btn btn-primary" @onclick="memory">Добавить юзера к генерации</button>
-</div>
-<div class="block_Main412">
-    <button class="btn btn-primary" @onclick="generate">Сгенерировать</button>
-</div>
-<div class="block_Main44">
-    <div class="block_Main414">
-        <input type="checkbox" checked=@subs @onclick="sub"> Добавить в существующую группу
-        <p>Организационная еденица(Вводить обратно через \ . Например PEPE\TEST вводить TEST\PEPE)</p>
-        <input @bind="@OU" />
+<div class="block_Main444">
+    <div class="block_Main412">
+        <button class="btn btn-primary" @onclick="generate">Сгенерировать</button>
+    </div>
+    <div class="block_Main411">
+        <button class="btn btn-primary" @onclick="memory">Добавить юзера к генерации</button>
+    </div>
+    <div class="block_Main410">
+        <button class="btn btn-primary" @onclick="zero">Обнулить</button>
     </div>
 </div>
-<div class="block_Main410">
-    <button class="btn btn-primary" @onclick="zero">Обнулить</button>
+    <div class="block_Main44">
+        <div class="block_Main414">
+            <input type="checkbox" checked=@subs @onclick="sub"> Добавить в существующую группу
+            <p>Организационная единица(Вводить обратно через \ . Например PEPE\TEST вводить TEST\PEPE)</p>
+            <input @bind="@OU" />
+        </div>
 </div>
     @code {
-        private string NAME_GROUP, NAME_SERVER, DOMAIN_NAME, PASSWORD, LOGIN_USER, IMYA_USER, FAM_USER, SERVER_DOT_SPLIT, temp_group, temp_all, SERVER_NAME_FULL, OU, memeory;
+        private string NAME_GROUP, NAME_SERVER, DOMAIN_NAME, PASSWORD, LOGIN_USER, IMYA_USER, FAM_USER, SERVER_DOT_SPLIT, temp_group, temp_all, SERVER_NAME_FULL, OU;
         bool new_group = false;
         bool subs = false;
         int q = 0;
@@ -78,49 +80,43 @@
         {
             SERVER_NAME_FULL = NAME_SERVER + "." + DOMAIN_NAME;
             string[] words = DOMAIN_NAME.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-
+            SERVER_DOT_SPLIT = words[0] = "DC=" + words[0];
+            for (int i = 1; i != words.Length; i++)
+            {
+                words[i] = ",DC=" + words[i];
+                SERVER_DOT_SPLIT += words[i];
+            }
             if (subs == true)
             {
                 string[] pepe = OU.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
                 for (int count = 0; count != pepe.Length; count++)
                 {
                     pepe[count] = $"OU={pepe[count]},";
-                    memeory += pepe[count];
+                    SERVER_DOT_SPLIT = pepe[count] + SERVER_DOT_SPLIT;
                 }
-                for (int i = 0; i != words.Length; i++)
-                {
-                    memeory += "DC=" + words[i] + ",";
-                }
-                memeory = memeory.Remove(memeory.Length - 1);
                 temp_all +=
-    $"$ou = \"{memeory}\"\n" +
+    $"$ou = \"{SERVER_DOT_SPLIT}\"\n" +
     $"$pass = ConvertTo-SecureString -String \"{PASSWORD}\" -AsPlainText -Force\n" +
     "New-AdUser -Path $ou -Name \"" + LOGIN_USER + "\" -GivenName \"" + IMYA_USER + "\" -Surname \"" + FAM_USER + "\" -SamAccountName \"" + LOGIN_USER + "\" -UserPrincipalName \"" + LOGIN_USER + "@" + DOMAIN_NAME + "\" -Path $org -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString \"" + PASSWORD + "\" -AsPlainText -force) -passThru\n";
             }
+            else
+            {
+                if (new_group == true)
+                {
+                    temp_group += "New-ADOrganizationalUnit -Name:\"" + NAME_GROUP + "\" -Path:\"" + SERVER_DOT_SPLIT + "\" -ProtectedFromAccidentalDeletion:$true -Server:\"" + SERVER_NAME_FULL + "\"\n";
 
-            SERVER_DOT_SPLIT = words[0] = "OU=" + NAME_GROUP + ",DC=" + words[0];
-            for (int i = 1; i != words.Length; i++)
-            {
-                words[i] = ",DC=" + words[i];
-                SERVER_DOT_SPLIT += words[i];
+                    temp_all += "$org=\"OU=" + NAME_GROUP + "," + SERVER_DOT_SPLIT + "\"" +
+                                                      "\n$count=1" +
+                                                      "\nforeach ($i in $count)\n{New-AdUser -Name \"" + LOGIN_USER + "\" -GivenName \"" + IMYA_USER + "\" -Surname \"" + FAM_USER + "\" -SamAccountName \"" + LOGIN_USER + "\" -UserPrincipalName \"" + LOGIN_USER + "@" + DOMAIN_NAME + "\" -Path $org -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString \"" + PASSWORD + "\" -AsPlainText -force) -passThru }\n";
+                }
+                else
+                {
+                    temp_all += "$org=\"" + SERVER_DOT_SPLIT + "\";\n$count=1;\nforeach ($i in $count)\n{New-AdUser -Name \"" + LOGIN_USER + "\" -GivenName \"" + LOGIN_USER + "\" -Surname \"" + IMYA_USER + "\" -SamAccountName \"" + FAM_USER + "\" -UserPrincipalName \"" + LOGIN_USER + "@" + DOMAIN_NAME + "\" -Path $org -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString \"" + PASSWORD + "\" -AsPlainText -force) -passThru }\n";
+                }
             }
-
-            if (new_group == true)
-            {
-                temp_group = temp_group + "New-ADOrganizationalUnit -Name:\"" + NAME_GROUP + "\" -Path:\"" + SERVER_DOT_SPLIT + "\" -ProtectedFromAccidentalDeletion:$true -Server:\"" + SERVER_NAME_FULL + "\"\n";
-            }
-            if (!subs)
-            {
-                temp_all = temp_group?.Length == 0
-                                ? temp_all + "$org=\"" + SERVER_DOT_SPLIT + "\";\n$username=\"" + LOGIN_USER + "\";\n$count=1;\nforeach ($i in $count)\n{New-AdUser -Name \"" + LOGIN_USER + "\" -GivenName \"" + LOGIN_USER + "\" -Surname \"" + IMYA_USER + "\" -SamAccountName \"" + FAM_USER + "\" -UserPrincipalName \"" + FAM_USER + "@" + DOMAIN_NAME + "\" -Path $org -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString \"" + PASSWORD + "\" -AsPlainText -force) -passThru }"
-                                : temp_all + "$org=\"OU=" + NAME_GROUP + "," + SERVER_DOT_SPLIT + "\"" +
-                                  "\n$username=\"" + LOGIN_USER + "\"" +
-                                  "\n$count=1" +
-                                  "\nforeach ($i in $count)\n{New-AdUser -Name \"" + LOGIN_USER + "\" -GivenName \"" + IMYA_USER + "\" -Surname \"" + FAM_USER + "\" -SamAccountName \"" + LOGIN_USER + "\" -UserPrincipalName \"" + LOGIN_USER + "@" + DOMAIN_NAME + "\" -Path $org -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString \"" + PASSWORD + "\" -AsPlainText -force) -passThru }\n";
-            }
-            NAME_SERVER = PASSWORD = FAM_USER = IMYA_USER = LOGIN_USER = SERVER_NAME_FULL = DOMAIN_NAME = NAME_GROUP = OU ="";
             q++;
-            subs = new_group  = false;
+            NAME_SERVER = PASSWORD = FAM_USER = IMYA_USER = LOGIN_USER = SERVER_NAME_FULL = DOMAIN_NAME = OU = NAME_GROUP = temp_all = "";
+            subs = new_group = false;
         }
         void generate()
         {

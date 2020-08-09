@@ -1,13 +1,132 @@
 ﻿@page "/Windows/User/UserCreature"
 @inject IJSRuntime JSRuntime
+    <div class="block_Main02021">
+        Заполнять только если нужна новая группа
+        <div class="block_Main020201">
+            <input type="checkbox" checked=@new_group @onchange="neww"> Нужна новая группа
+        </div>
+        <div class="block_Main020202">
+            <p>Имя группы</p>
+            <input @bind="@NAME_GROUP" />
+        </div>
+        <div class="block_Main020203">
+            <p>Имя сервера</p>
+            <input @bind="@NAME_SERVER" />
+        </div>
+    </div>
+    <div class="block_Main02022">
+        <div class="block_Main020204">
+            <p>Доменное имя</p>
+            <input @bind="@DOMAIN_NAME" />
+        </div>
+        <div class="block_Main020205">
+            <p>Пароль</p>
+            <input @bind="@PASSWORD" />
+        </div>
+        <div class="block_Main020206">
+            <p>Логин юзера</p>
+            <input @bind="@LOGIN_USER" />
+        </div>
+        <div class="block_Main020207">
+            <p>Имя юзеров</p>
+            <input @bind="@IMYA_USER" />
+        </div>
+        <div class="block_Main020208">
+            <p>Фамилия юзеров</p>
+            <input @bind="@FAM_USER" />
+        </div>
+        <div class="block_Main020209">
+            <p>Сколько надо сгенерировать юзеров</p>
+            <input @bind="@NUMBER" />
+        </div>
+    </div>
+    <div class="block_Main02023">
+        <div class="block_Main020210">
+            <button class="btn btn-primary" @onclick="generate">Сгенерировать</button>
+        </div>
+        <div class="block_Main020211">
+            <button class="btn btn-primary" @onclick="zero">Обнулить</button>
+        </div>
+    </div>
+    <div class="block_Main02024">
+        <div class="block_Main020212">
+            <input type="checkbox" checked=@subs @onclick="sub"> Добавить в существующую группу
+            <p>Организационная единица(Вводить обратно через \ . Например PEPE\TEST вводить TEST\PEPE)</p>
+            <input @bind="@OU" />
+        </div>
+    </div>
 
 
 
 
+        @code {
+            private string NAME_GROUP, NAME_SERVER, DOMAIN_NAME, PASSWORD, LOGIN_USER, IMYA_USER, FAM_USER, SERVER_DOT_SPLIT, temp_group, temp_all, SERVER_NAME_FULL, OU;
+            bool new_group  = false;
+            bool subs = false;
+            int NUMBER = 1;
+            void neww()
+            {
+                new_group = true;
+            }
+            void sub()
+            {
+                subs = true;
+            }
+            void zero()
+            {
+                NAME_SERVER = PASSWORD = FAM_USER = IMYA_USER = LOGIN_USER = SERVER_NAME_FULL = DOMAIN_NAME = NAME_GROUP = temp_all = SERVER_DOT_SPLIT = temp_group = OU = "";
+                new_group = subs = false;
+                NUMBER = 1;
+            }
+            void generate()
+            {
+                SERVER_NAME_FULL = NAME_SERVER + "." + DOMAIN_NAME;
+                string[] words = DOMAIN_NAME.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                SERVER_DOT_SPLIT = words[0] = "DC=" + words[0];
+                for (int i = 1; i != words.Length; i++)
+                {
+                    words[i] = ",DC=" + words[i];
+                    SERVER_DOT_SPLIT += words[i];
+                }
+                if (subs == true)
+                {
+                    string[] pepe = OU.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int count = 0; count != pepe.Length; count++)
+                    {
+                        pepe[count] = $"OU={pepe[count]},";
+                        SERVER_DOT_SPLIT = pepe[count] + SERVER_DOT_SPLIT;
+                    }
+                    temp_all =
+    $"$ou = \"{SERVER_DOT_SPLIT}\"\n" +
+    $"$pass = ConvertTo-SecureString -String \"{PASSWORD}\" -AsPlainText -Force\n" +
+    "New-AdUser -Path $ou -Name \"" + LOGIN_USER + "\" -GivenName \"" + IMYA_USER + "\" -Surname \"" + FAM_USER + "\" -SamAccountName \"" + LOGIN_USER + "\" -UserPrincipalName \"" + LOGIN_USER + "@" + DOMAIN_NAME + "\" -Path $org -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString \"" + PASSWORD + "\" -AsPlainText -force) -passThru\n";
 
+                }
+                else
+                {
+                    if (new_group == true)
+                    {
+                        temp_group = temp_group + "New-ADOrganizationalUnit -Name:\"" + NAME_GROUP + "\" -Path:\"" + SERVER_DOT_SPLIT + "\" -ProtectedFromAccidentalDeletion:$true -Server:\"" + SERVER_NAME_FULL + "\"\n";
 
-
-
-@code {
-
-}
+                        temp_all = "$org=\"OU=" + NAME_GROUP + "," + SERVER_DOT_SPLIT + "\"" +
+                                                          "\n$count=1" +
+                                                          "\nforeach ($i in $count)\n{New-AdUser -Name \"" + LOGIN_USER + "\" -GivenName \"" + IMYA_USER + "\" -Surname \"" + FAM_USER + "\" -SamAccountName \"" + LOGIN_USER + "\" -UserPrincipalName \"" + LOGIN_USER + "@" + DOMAIN_NAME + "\" -Path $org -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString \"" + PASSWORD + "\" -AsPlainText -force) -passThru }\n";
+                    }
+                    else
+                    {
+                        temp_all = "$org=\"" + SERVER_DOT_SPLIT + "\";\n$count=1;\nforeach ($i in $count)\n{New-AdUser -Name \"" + LOGIN_USER + "\" -GivenName \"" + LOGIN_USER + "\" -Surname \"" + IMYA_USER + "\" -SamAccountName \"" + FAM_USER + "\" -UserPrincipalName \"" + LOGIN_USER + "@" + DOMAIN_NAME + "\" -Path $org -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString \"" + PASSWORD + "\" -AsPlainText -force) -passThru }";
+                    }
+                }
+                string go_to = temp_group + temp_all;
+                DownloadFile("GU.ps1", go_to);
+                zero();
+            }
+            public async void DownloadFile(string Name, string content)
+            {
+                await JSRuntime.InvokeAsync<object>(
+                    "FileSaveAs",
+                    Name,
+                    content
+                );
+            }
+        }

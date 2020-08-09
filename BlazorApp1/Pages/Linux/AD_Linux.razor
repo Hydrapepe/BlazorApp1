@@ -1,0 +1,48 @@
+﻿@page "/Linux/AD"
+@inject IJSRuntime JSRuntime
+<div class="block_Main0301">
+    <div class="block_Main030101">
+        <p>Доменное имя</p>
+        <input @bind="@DOMAIN_NAME_FULL" />
+    </div>
+    <div class="block_Main030102">
+        <p>Ip сервера</p>
+        <input @bind="@IP_ADDRESS" />
+    </div>
+    <div class="block_Main030103">
+        <p>Имя юзера</p>
+        <input @bind="@NAME_USER" />
+    </div>
+</div>
+<div class="block_Main0302">
+    <div class="block_Main030104">
+        <button class="btn btn-primary" @onclick="zero">Обнулить</button>
+    </div>
+    <div class="block_Main030105">
+        <button class="btn btn-primary" @onclick="Main">Сгенерировать</button>
+    </div>
+</div>
+    @code {
+        string IP_ADDRESS, NAME_USER, DOMAIN_NAME_FULL, rele, WORKGROUP;
+        void zero()
+        {
+            IP_ADDRESS = NAME_USER = DOMAIN_NAME_FULL = rele = WORKGROUP = "";
+        }
+        void Main()
+        {
+            string[] words = DOMAIN_NAME_FULL.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            WORKGROUP = words[0].ToUpper(new CultureInfo("en-US", false));
+            DOMAIN_NAME_FULL = DOMAIN_NAME_FULL.ToUpper(new CultureInfo("en-US", false));
+            rele = "#!/bin/bash\nadusername='" + NAME_USER + "'\nip='" + IP_ADDRESS + "'\ndomain='" + words[0] + "'\nworkgroup='" + WORKGROUP + "'\nrealm='" + DOMAIN_NAME_FULL + "'\napt update\napt install net-tools -y\napt install postfix dovecot-dev -y\napt install krb5-user samba winbind -y\nrm -rf /etc/resolv.conf\necho -e \"domain $domain\\nsearch $domain\\nnameserver $ip\" > /etc/resolv.conf\nsed - i 's/WORKGROUP/'$workgroup'/' / etc / samba / smb.conf\nsed -i '/Networking/a realm = '$realm'' /etc/samba/smb.conf\nsed -i 's/standalone server/member server/' /etc/samba/smb.conf\necho '**************************************'\necho 'Vvedite parol ot uchetki Active Directory'\necho '**************************************'\nnet ads join -U $adusername -D $realm\necho ''\necho '**************************************'\necho 'Informaciya o Domene'\necho '**************************************'\nnet ads info";
+            DownloadFile("Linux_AD.sh", rele);
+            zero();
+        }
+        public async void DownloadFile(string Name, string content)
+        {
+            await JSRuntime.InvokeAsync<object>(
+                "FileSaveAs",
+                Name,
+                content
+            );
+        }
+    }

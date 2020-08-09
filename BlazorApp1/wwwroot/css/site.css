@@ -334,14 +334,20 @@ app {
     border: 4px double black;
 }
 .block_Main44 {
-    position: relative ;
-    left: 1000px;
-    top: -750px;
+    position: relative;
+    left: 900px;
+    top: -990px;
     width: 300px;
     height: 300px;
     border: 4px double black;
 }
-
+.block_Main444 {
+    position: relative;
+    left: 600px;
+    top: -300px;
+    width: 300px;
+    height: 300px;
+}
 .block_Main401 {
     position: relative;
     left: 10px;
@@ -387,21 +393,6 @@ app {
     left: 0px;
     top: 0px;
 }
-.block_Main410 {
-    position: relative ;
-    left: 400px;
-    top: -575px;
-}
-.block_Main411 {
-    position: relative ;
-    left: 600px;
-    top: -200px;
-}
-.block_Main412 {
-    position: relative ;
-    left: 900px;
-    top: -240px;
-}
 .block_Main413 {
     position: relative ;
     left: 0px;
@@ -413,3 +404,50 @@ app {
     top: 0px;
 }
 
+
+.block_Main02021 {
+    position: relative;
+    left: 0px;
+    top: 0px;
+    width: 400px;
+    height: 500px;
+    border: 4px double black;
+}
+.block_Main02022 {
+    position: relative;
+    left: 500px;
+    top: -500px;
+    width: 400px;
+    height: 500px;
+    border: 4px double black;
+}
+.block_Main02024 {
+    position: relative;
+    left: 1000px;
+    top: -1200px;
+    width: 400px;
+    height: 500px;
+    border: 4px double black;
+}
+.block_Main02023 {
+    position: relative;
+    left: 700px;
+    top: -400px;
+    width: 200px;
+    height: 200px;
+}
+
+.block_Main0301 {
+    position: relative;
+    left: 0px;
+    top: 0px;
+    width: 200px;
+    height: 200px;
+}
+.block_Main0302 {
+    position: relative;
+    left: 0px;
+    top: 300px;
+    width: 200px;
+    height: 200px;
+}
